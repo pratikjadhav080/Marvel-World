@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="MarvelComics"></div>
+</body>
+<script>
+    let allcomics = document.getElementById("MarvelComics")
+
+    const displayAllComics = async() =>{
+        
+        let response = await fetch("https://gateway.marvel.com:443/v1/public/comics?ts=1&apikey=7831fa0fb33ba88e8f9b23f9245e8fb8&hash=2e14a338bce58f85de674325b26ea0c8")
+
+        let {data:{results}} = await response.json();
+
+        console.log(results)
+
+        results.forEach((comic) => {
+
+            let {id,title,thumbnail:{path,extension}} = comic
+            
+            let comic_div= document.createElement("div")
+            let comic_img = document.createElement("img")
+            let comic_title = document.createElement("p")
+
+            comic_img.src=`${path}.${extension}`
+            comic_title.textContent = title;
+            
+            comic_div.append(comic_img,comic_title)
+            comic_div.onclick = function () {
+                addComicDetails(id);
+            }
+
+            allcomics.append(comic_div)
+        });
+    }
+
+
+    const addComicDetails = (id) =>{
+        localStorage.setItem("comic_id",id)
+        window.location.href="individual_Comic.html"
+    }
+
+
+    displayAllComics();
+
+</script>
+</html>

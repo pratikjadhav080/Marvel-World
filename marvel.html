@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marvel Characters, Super Heroes, & Villains List | Marvel</title>
+    <link rel="shortcut icon" href="marvelfevicon.png" type="image/x-icon" class="next-head">
+</head>
+
+<body>
+
+    <h1>Marvel LOGO</h1>
+    <h1>Characters</h1>
+    <a href="comics.html">Comics</a></br>
+
+    <input type="text" id="characters" placeholder="Search Characters" oninput="debounce(main,1000)" />
+    <div id="results"></div>
+    <div id="MarvelCharacters"></div>
+
+</body>
+<script>
+
+    let allcharacters = document.getElementById("MarvelCharacters")
+    let timerID;
+    let char_div = document.getElementById("results")
+
+    async function searchCharacters(char_name) {
+
+        if (char_name === "") {
+            char_div.style.display = "none"
+            return false;
+        }
+
+        let response = await fetch(`https://gateway.marvel.com:443/v1/public/characters?nameStartsWith=${char_name}&ts=1&apikey=7831fa0fb33ba88e8f9b23f9245e8fb8&hash=2e14a338bce58f85de674325b26ea0c8`)
+
+        let { data: { results } } = await response.json();
+
+        return results
+        //async function will always return a promise.
+
+    }
+
+    async function main() {
+
+        let char_name = document.getElementById("characters").value
+
+        let char_result = await searchCharacters(char_name)
+        //async function will always return a promise.
+
+        console.log(char_result)
+
+        if (char_result == undefined || !char_result || !char_result.length) {
+            return false;
+        }
+
+        appendMovie(char_result)
+
+    }
+
+
+    function appendMovie(m) {
+
+        char_div.innerHTML = null
+        char_div.style.display = "block"
+
+        m.forEach(({ name }) => {
+
+            let p = document.createElement("p")
+
+            p.textContent = name;
+
+            console.log(p)
+
+            char_div.append(p)
+
+            console.log(name)
+        })
+    }
+
+
+    function debounce(func, delay) {
+
+        let char_name = document.getElementById("characters").value
+
+        if (char_name.length < 3) {
+            char_div.style.display = "none"
+            return false;
+        }
+
+        if (timerID) {
+            clearTimeout(timerID)
+        }
+
+        timerID = setTimeout(() => {
+            func()
+        }, delay)
+
+    }
+
+
+    const displayAllCharacters = async () => {
+
+        console.log("here")
+
+        let response = await fetch("https://gateway.marvel.com:443/v1/public/characters?limit=30&ts=1&apikey=7831fa0fb33ba88e8f9b23f9245e8fb8&hash=2e14a338bce58f85de674325b26ea0c8")
+
+        let { data: { results } } = await response.json();
+
+        console.log(results)
+
+        results.forEach((char) => {
+
+            let { id, name, thumbnail: { path, extension } } = char
+
+            let character_div = document.createElement("div")
+            let character_img = document.createElement("img")
+            let character_name = document.createElement("p")
+
+            character_img.src = `${path}.${extension}`
+            character_name.textContent = name;
+
+            character_div.append(character_img, character_name)
+            character_div.onclick = function () {
+                addcharacterDetails(id);
+            }
+
+            allcharacters.append(character_div)
+        });
+    }
+
+
+    const addcharacterDetails = (id) => {
+        localStorage.setItem("character_id", id)
+        window.location.href = "individual_Char.html"
+    }
+
+    displayAllCharacters();
+
+</script>
+
+</html>

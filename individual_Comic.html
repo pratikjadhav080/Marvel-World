@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="comicDetails"></div>
+</body>
+<script>
+
+    let comic_div= document.getElementById("comicDetails")
+
+    const getComic = async() =>{
+
+        let comic_id = localStorage.getItem("comic_id")
+
+        let response = await fetch(`https://gateway.marvel.com:443/v1/public/comics/${comic_id}?ts=1&apikey=7831fa0fb33ba88e8f9b23f9245e8fb8&hash=2e14a338bce58f85de674325b26ea0c8`)
+
+        let {data:{results}} = await response.json();
+
+        showComic(results[0])
+    }
+
+    const showComic = ({title,thumbnail:{path,extension}}) =>{
+
+        let comic_img = document.createElement("img")
+        let comic_title = document.createElement("p")
+
+        comic_img.src=`${path}.${extension}`
+        comic_title.textContent = title;
+
+        comic_div.append(comic_img,comic_title)
+    }
+
+    getComic()
+</script>
+</html>
